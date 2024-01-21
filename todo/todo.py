@@ -13,11 +13,9 @@ print('''Welcome to our humble to-do list app.
 	- "s" to save your to-do''')
 	
 
-# todo = {}
 
-# add to-do
 def add_todo():
-	global todo
+	
 	try:
 		with open('todo.json', 'r') as f:
 			todo = json.load(f)
@@ -50,8 +48,11 @@ def add_todo():
 # delete to-do
 def delete_todo():
 
-	with open('todo.json', 'r') as f:
-		todo = json.load(f)
+	try:
+		with open('todo.json', 'r') as f:
+			todo = json.load(f)
+	except (FileNotFoundError, json.JSONDecodeError):
+		todo = {}
 
 	if len(todo) == 0:
 		print('\nYour to-do is empty please add at least one item.\n')
@@ -63,6 +64,10 @@ def delete_todo():
 			if delete_input == 'p'.lower():
 				del todo['p']
 				print_done()
+
+			elif delete_input == 'm'.lower():
+				markas_done()
+
 			elif delete_input in todo:
 				print(delete_input)
 				del todo[delete_input]
@@ -77,8 +82,11 @@ def delete_todo():
 # mark as done
 def markas_done():
 
-	with open('todo.json', 'r') as f:
-		todo = json.load(f)
+	try:
+		with open('todo.json', 'r') as f:
+			todo = json.load(f)
+	except (FileNotFoundError, json.JSONDecodeError):
+		todo = {}
 
 	if len(todo) == 0:
 		print('\nYour to-do is empty please add at least one item.\n')
@@ -91,6 +99,9 @@ def markas_done():
 
 		elif markas_done_input == 'p'.lower():
 			print_done()
+
+		elif markas_done_input == 'd'.lower():
+			delete_todo()
 
 		elif markas_done_input == 's'.lower():
 			with open('todo.json', 'w') as f:
