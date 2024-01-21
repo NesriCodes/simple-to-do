@@ -13,11 +13,16 @@ print('''Welcome to our humble to-do list app.
 	- "s" to save your to-do''')
 	
 
-todo = {}
+# todo = {}
 
 # add to-do
 def add_todo():
 	global todo
+	try:
+		with open('todo.json', 'r') as f:
+			todo = json.load(f)
+	except (FileNotFoundError, json.JSONDecodeError):
+		todo = {}
 
 	while True:
 		todo_input = input('add: ').strip()
@@ -34,15 +39,13 @@ def add_todo():
 
 		elif todo_input == 'p'.lower():
 			print_done()
-			
+
 		elif todo_input == 's'.lower():
-			save_todo()
+			with open('todo.json', 'w') as f:
+				json.dump(todo, f)
+			break
 		else:
 			todo[todo_input] = False
-
-def save_todo():
-	with open('todo.json', 'a') as f:
-		json.dump(todo, f)
 
 # delete to-do
 def delete_todo():
@@ -89,8 +92,14 @@ def markas_done():
 		elif markas_done_input == 'p'.lower():
 			print_done()
 
+		elif markas_done_input == 's'.lower():
+			with open('todo.json', 'w') as f:
+				json.dump(todo, f)
+			break
+
 		if markas_done_input in todo:
 			todo[markas_done_input] = True
+			print(todo)
 
 		else:
 			print('\nItem is not in the list. please add it first.\n')
@@ -110,6 +119,7 @@ def markas_done():
 				print('Please insert only "y" - yes or "n" for no.')
 	with open('todo.json', 'w') as f:
 		json.dump(todo, f)
+
 
 # save 
 def print_done():
