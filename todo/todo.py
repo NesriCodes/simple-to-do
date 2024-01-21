@@ -9,110 +9,122 @@ print('''Welcome to our humble to-do list app.
 	** you don\'t have to use 'a' character to start adding item at the beginning
 	- "a" to add item to the to-do list. It will give you the key word 'add' to indicate you start adding items. you can add more than one item by using "enter" on your keyboard.
 	- "d" to delete items from our to-do. you can delete more than one item by using "enter" on your keyboard.
-	- "m" to mark items as done in our to-do. you can mark more items from your to-do by using "enter" on your keyboard.''')
+	- "m" to mark items as done in our to-do. you can mark more items from your to-do by using "enter" on your keyboard.
+	- "s" to save your to-do''')
+	
 
 todo = {}
 
 # add to-do
 def add_todo():
 	global todo
-	
-	
-	adding = True
-	while adding:
-		todo_input = input('add: ')
-		todo[todo_input] = False
 
-		if todo_input == 'q':
-			del todo['q']
-			adding = False
+	while True:
+		todo_input = input('add: ').strip()
+		
+		if todo_input == 'q'.lower():
+			print('quitting...')
+			break
 
-		if todo_input == 'd':
-			del todo['d']
+		elif todo_input == 'd'.lower():
 			delete_todo()
 
-		if todo_input == 'm':
-			del todo['m']
+		elif todo_input == 'm'.lower():
 			markas_done()
 
-		if todo_input == 'p':
-			del todo['p']
+		elif todo_input == 'p'.lower():
 			print_done()
-	
+			
+		elif todo_input == 's'.lower():
+			save_todo()
+		else:
+			todo[todo_input] = False
+
+def save_todo():
+	with open('todo.json', 'a') as f:
+		json.dump(todo, f)
 
 # delete to-do
 def delete_todo():
-	global todo
+
+	with open('todo.json', 'r') as f:
+		todo = json.load(f)
 
 	if len(todo) == 0:
 		print('\nYour to-do is empty please add at least one item.\n')
-	while todo:
-		delete_input = input('which item do you want to delete: ')
-		if delete_input == 'q':
-			break
-		if delete_input == 'p':
-			del todo['p']
-			print_done()
-
-		del todo[delete_input]
+	else:
+		while True:
+			delete_input = input('which item do you want to delete: ').strip()
+			if delete_input == 'q'.lower():
+				break
+			if delete_input == 'p'.lower():
+				del todo['p']
+				print_done()
+			elif delete_input in todo:
+				print(delete_input)
+				del todo[delete_input]
+				print(todo)
+			else: 
+				print(f'Item {delete_input} not found.')
+	with open('todo.json', 'w') as f:
+		json.dump(todo, f)
+	
 		
 
 # mark as done
 def markas_done():
-	global todo
+
+	with open('todo.json', 'r') as f:
+		todo = json.load(f)
 
 	if len(todo) == 0:
 		print('\nYour to-do is empty please add at least one item.\n')
 
 	while todo:
-		markas_done_input = input('which item do you want to mark as done: ')
-		# if markas_done_input not in to-do:
-		# 	print('Item is not in the list. please add it first.')
-		# 	add_todo()
+		markas_done_input = input('which item do you want to mark as done: ').strip()
 		
-		if markas_done_input == 'q' :
-			quit()
+		if markas_done_input == 'q'.lower():
+			break
 
-		# if markas_done_input == 'p':
-			
-		# 	print_done()
+		elif markas_done_input == 'p'.lower():
+			print_done()
 
 		if markas_done_input in todo:
 			todo[markas_done_input] = True
 
-		elif markas_done_input == 'p':
-			print_done()
 		else:
 			print('\nItem is not in the list. please add it first.\n')
-			choose_input = input(f'''Do you want to add "{markas_done_input}" to your item list? (y/n). if you choose "y" it will be marked as done.
-				* Enter "a" if you want to just "add" item.''')
-			if choose_input == 'y':
+			choose_input = input(f'''Do you want to add "{markas_done_input}" to your item list? (y/n). 
+	if you choose "y" it will be marked as done.
+	* Enter "a" if you want to just "add" item.''')
+			if choose_input == 'y'.lower():
 				todo[markas_done_input] = True
 
-			elif choose_input == 'n':
+			elif choose_input == 'n'.lower():
 				continue
 
-			elif choose_input == 'a':
+			elif choose_input == 'a'.lower():
 				add_todo()
 
 			else:
 				print('Please insert only "y" - yes or "n" for no.')
-
-
-	
+	with open('todo.json', 'w') as f:
+		json.dump(todo, f)
 
 # save 
 def print_done():
-	global todo
 
-	print(f'you have done the following items\n')
+	with open('todo.json', 'r') as f:
+		todo = json.load(f)
 
 	for key, value in todo.items():
 		if value == True:
-			print(f'\t-{key}')
+			print(f'Done items\n\t-{key}')
+		elif value == False:
+			print(f'Not done\n\t-{key}\nto tick of your items insert "m" to the console')
 
 
-		elif value == None:
+		else:
 			print('No progress yet.')
 	print()
 
